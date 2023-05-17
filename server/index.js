@@ -16,7 +16,7 @@ app.post("/todos", async (req, res) => {
     const description = req.body.description;
     const newTodo = await pool.query(
       "INSERT INTO todo (description) VALUES($1) RETURNING *", // RETURNING * : return the newly inserted row
-      [description]
+      [description] // the $1 will be replaced with what in the []
     );
 
     res.json(newTodo.rows[0]);
@@ -24,6 +24,7 @@ app.post("/todos", async (req, res) => {
     console.log(error.message);
   }
 });
+
 //get all todo
 app.get("/todos", async(req, res) => {
     try {
@@ -33,6 +34,19 @@ app.get("/todos", async(req, res) => {
         console.log(error.message);
     }
 });
+
+//get a todo
+app.get("/todos/:id", async(req,res) => {
+    try {
+        const {id} = req.params;
+        const theTodo = await pool.query("SELECT * From todo WHERE todo_id = $1",
+         [id] ); // the $1 will be replaced with what in the []
+         res.json(theTodo.rows[0])
+    } catch (error) {
+        console.log(error.message)
+    }
+})
+
 //update todo
 app.put("/:id", function (req, res) {});
 //delete todo
